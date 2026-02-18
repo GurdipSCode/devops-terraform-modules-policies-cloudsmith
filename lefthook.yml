@@ -1,0 +1,24 @@
+# lefthook.yml
+pre-commit:
+  parallel: true
+  jobs:
+    - name: opa-fmt
+      glob: "*.rego"
+      run: opa fmt --write {staged_files}
+      stage_fixed: true
+
+    - name: opa-check
+      glob: "*.rego"
+      run: opa check --strict {staged_files}
+
+    - name: opa-test
+      run: opa test . --verbose
+
+    - name: regal-lint
+      glob: "*.rego"
+      run: regal lint {staged_files}
+
+pre-push:
+  jobs:
+    - name: opa-test-coverage
+      run: opa test . --coverage --threshold 80
